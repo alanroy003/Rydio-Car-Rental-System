@@ -27,6 +27,8 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://rydio-car-rental-system.vercel.app",
+      "https://rydio-frontend.vercel.app",
+      "https://rydio-admin.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
