@@ -22,7 +22,16 @@ const PORT = process.env.PORT || 5000;
 
 // middlewares
 
-app.use(cors()); // allow CORS for API calls
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://rydio-car-rental-system.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+); // allow CORS for API calls
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }, // <-- important

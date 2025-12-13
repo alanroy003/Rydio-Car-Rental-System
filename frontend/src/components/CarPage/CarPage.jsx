@@ -32,7 +32,7 @@ const CarPage = () => {
   const abortControllerRef = useRef(null);
 
   // base URL for API (use env var in production)
-  const base = "http://localhost:5000";
+  const base = import.meta.env.VITE_API_URL;
 
   // number of cars to fetch (backend should accept limit param)
   const limit = 12;
@@ -55,40 +55,48 @@ const CarPage = () => {
   }, []);
 
   const fetchCars = async () => {
-    setLoading(true);
-    setError("");
-    if (abortControllerRef.current) {
-      try {
-        abortControllerRef.current.abort();
-      } catch (e) {}
-    }
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
+  setLoading(true);
+  setError("");
+  if (abortControllerRef.current) {
     try {
-      const res = await axios.get(`${base}/api/cars`, {
-        params: { limit },
-        signal: controller.signal,
-        headers: { Accept: "application/json" },
-      });
+      abortControllerRef.current.abort();
+    } catch (e) {}
+  }
+  const controller = new AbortController();
+  abortControllerRef.current = controller;
 
-      const json = res.data;
-      setCars(Array.isArray(json.data) ? json.data : json.data ?? json);
-    } catch (err) {
-      const isCanceled =
-        err?.code === "ERR_CANCELED" ||
-        (axios.isCancel && axios.isCancel(err)) ||
-        err?.name === "CanceledError";
-      if (isCanceled) return;
+  // Build the URL
+  const url = `${base}/api/cars`;
 
-      console.error("Failed to fetch cars:", err);
-      setError(
-        err?.response?.data?.message || err.message || "Failed to load cars"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  console.log("Fetching cars from URL:", url); // ✅ Correct logging
+
+  try {
+    const res = await axios.get(url, {
+      params: { limit },
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+    });
+
+    console.log("Response data:", res.data); // ✅ Logs the actual data
+
+    const json = res.data;
+    setCars(Array.isArray(json.data) ? json.data : json.data ?? json);
+  } catch (err) {
+    const isCanceled =
+      err?.code === "ERR_CANCELED" ||
+      (axios.isCancel && axios.isCancel(err)) ||
+      err?.name === "CanceledError";
+    if (isCanceled) return;
+
+    console.error("Failed to fetch cars:", err);
+    setError(
+      err?.response?.data?.message || err.message || "Failed to load cars"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const buildImageSrc = (image) => {
     if (!image) return "";
