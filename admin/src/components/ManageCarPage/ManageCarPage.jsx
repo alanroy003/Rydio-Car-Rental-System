@@ -17,8 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { styles } from "../../assets/dummyStyles";
 
 // Constants and configuration
-const BASE =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") || import.meta.env.VITE_API_URL;
+const BASE =import.meta.env.VITE_API_URL;
 const api = axios.create({
   baseURL: BASE,
   headers: { Accept: "application/json" },
